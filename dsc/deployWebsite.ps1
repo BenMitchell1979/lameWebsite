@@ -35,7 +35,7 @@ Configuration deployWebsite {
     Archive unzipWebsite {
         Ensure = 'Present'
         Path = 'C:\inetpub\website.zip'
-        Destination = 'c:\inetpub\wwwroot'
-        Force = TRUE
+        Destination = 'c:\inetpub\'
+        Force = $True
     }
 }
