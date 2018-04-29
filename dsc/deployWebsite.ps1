@@ -8,24 +8,34 @@ Configuration deployWebsite {
     }
 
     # Download file
-    File downloadWebsite {
-        Ensure = 'Present'
-        DestinationPath = 'c:\inetpub\website.zip'
-        SourcePath = 'https://github.com/BenMitchell1979/lameWebsite/raw/master/data/website.zip'
-        Type = 'File'
+    Script downloadWebsite {
+        GetScript = 
+            {
+                @{
+                    GetScript = $GetScript
+                    SetScript = $SetScript
+                    TestScript = $TestScript
+                    Result = ('True' -in (Test-Path c:\inetpub\website.zip))
+                }
+            }
+
+            SetScript = 
+            {
+                Invoke-WebRequest -Uri "https://github.com/BenMitchell1979/lameWebsite/raw/master/data/website.zip" -OutFile "c:\inetpub\website.zip"
+            }
+
+            TestScript = 
+            {
+                $Status = ('True' -in (Test-Path c:\inetpub\website.zip))
+                $Status -eq $True
+            }
     }
 
-    Script extractWebsite {
-        SetScript = {
-            Expand-Archive -Force -Path "c:\inetpub\website.zip" -DestinationPath "C:\inetpub\wwwroot\";
-        }
-
-        TestScript = {
-            (test-path -Path "c:\inetpub\wwwroot");
-        }
-
-        GetScript = {
-            # Nothing to see here
-        }
+    # Unzip File
+    Archive unzipWebsite {
+        Ensure = 'Present'
+        Path = 'C:\inetpub\website.zip'
+        Destination = 'c:\inetpub\wwwroot'
+        Force = TRUE
     }
 }
